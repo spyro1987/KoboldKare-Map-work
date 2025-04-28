@@ -605,6 +605,7 @@ MonoBehaviour:
   bodyRenderers:
   - {fileID: 4095239331484180769}
   stepHeight: 0.94
+  equipOnSpawn: []
   antiPopCurveIK:
     serializedVersion: 2
     m_Curve:
@@ -1121,12 +1122,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d76f24409a39604ca3986f91ce6d28a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interpolate: 1
+  jiggleUpdateMode: 0
+  <blend>k__BackingField: 1
   jiggleRigs:
   - rootTransform: {fileID: 7515230533218221655}
     jiggleSettings: {fileID: 11400000, guid: dbe6208777cdd9f4e8606917a68c9139, type: 2}
     ignoredTransforms: []
     colliders: []
+    animated: 0
   wind: {x: 0, y: 0, z: 0}
   debugDraw: 0
 --- !u!1 &1219250529932600546
@@ -3070,12 +3073,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d76f24409a39604ca3986f91ce6d28a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interpolate: 1
+  jiggleUpdateMode: 0
+  <blend>k__BackingField: 1
   jiggleRigs:
   - rootTransform: {fileID: 1133361494190744769}
     jiggleSettings: {fileID: 11400000, guid: f9c7674a1ab77424081b6581f53a5acc, type: 2}
     ignoredTransforms: []
     colliders: []
+    animated: 0
   wind: {x: 0, y: 0, z: 0}
   debugDraw: 0
 --- !u!1 &3921392404676308639
@@ -7731,11 +7736,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d76f24409a39604ca3986f91ce6d28a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interpolate: 1
+  jiggleUpdateMode: 0
+  <blend>k__BackingField: 1
   jiggleRigs:
   - rootTransform: {fileID: 6133533017239055294}
     jiggleSettings: {fileID: 11400000, guid: f9c7674a1ab77424081b6581f53a5acc, type: 2}
     ignoredTransforms: []
     colliders: []
+    animated: 0
   wind: {x: 0, y: 0, z: 0}
   debugDraw: 0
