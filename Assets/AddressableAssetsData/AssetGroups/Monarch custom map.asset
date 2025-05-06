@@ -10,32 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: monarchs custom defuilt map
+  m_Name: Monarch custom map
   m_EditorClassIdentifier: 
-  m_GroupName: monarchs custom defuilt map
+  m_GroupName: Monarch custom map
   m_Data:
     m_SerializedData: []
-  m_GUID: b523a465d84f2cc428db7df06fd605e9
+  m_GUID: 6e058c56fd139674f93090ab7867f4d3
   m_SerializeEntries:
   - m_GUID: 708c60ef18c02ca4fabb5de5ebdd5937
-    m_Address: Main Map customized
+    m_Address: Assets/(a) map folder/Main Map customized.unity
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b968a9eef59eb3d45a07b0e2ea24ddd7
-    m_Address: New PlayableMap
+    m_Address: Assets/(a) map folder/custom map playable.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - PlayableMap
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 614e1e0e74827264f982df882b9d0d58
-    m_Address: audio for custom defuilt map
-    m_ReadOnly: 0
-    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bae434cba05d81d4b9cb5c181a2fbf2c, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: f6bbb5ba5b9b8bb4fa15f9060ba7d4e7, type: 2}
-    - {fileID: 11400000, guid: 49d91f2e3e95abb498392a5264fa1e86, type: 2}
+    - {fileID: 11400000, guid: 47019aa5d9a9c724cb81afc055b482eb, type: 2}
