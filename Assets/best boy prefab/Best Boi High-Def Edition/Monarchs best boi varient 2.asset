@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Monarchs best boi varient 2
   m_EditorClassIdentifier: 
   assetGroups:
-  - {fileID: 11400000, guid: 497657159c41310479e72d5f0162cf60, type: 2}
+  - {fileID: 11400000, guid: a159588714077884c8c573227bd3486b, type: 2}
   buildPath: 
   runtimeLoadPath: 
   catalogName: Monarchs best boi varient 2

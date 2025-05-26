@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: Monarchs custom map
   preview: {fileID: 21300000, guid: d597d2b91cfae2f4ca787b3e496f3954, type: 3}
-  description: 
+  description: test
   unityScene:
     m_AssetGUID: 708c60ef18c02ca4fabb5de5ebdd5937
     m_SubObjectName: 
