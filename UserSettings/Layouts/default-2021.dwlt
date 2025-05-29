@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 989
   m_ShowMode: 4
-  m_Title: Scene
+  m_Title: Hierarchy
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -190,7 +190,7 @@ MonoBehaviour:
     x: 0
     y: 0
     width: 1026
-    height: 728
+    height: 462
   m_MinSize: {x: 102, y: 121}
   m_MaxSize: {x: 4002, y: 4021}
   m_ActualView: {fileID: 15}
@@ -215,9 +215,9 @@ MonoBehaviour:
   m_Position:
     serializedVersion: 2
     x: 0
-    y: 728
+    y: 462
     width: 1026
-    height: 211
+    height: 477
   m_MinSize: {x: 232, y: 271}
   m_MaxSize: {x: 10002, y: 10021}
   m_ActualView: {fileID: 16}
@@ -253,7 +253,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 300}
   m_MaxSize: {x: 8096, y: 24288}
   vertical: 1
-  controlID: 160
+  controlID: 165
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -273,8 +273,8 @@ MonoBehaviour:
     y: 0
     width: 551
     height: 618
-  m_MinSize: {x: 275, y: 100}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 276, y: 121}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 20}
   m_Panes:
   - {fileID: 20}
@@ -305,8 +305,8 @@ MonoBehaviour:
     y: 618
     width: 551
     height: 199
-  m_MinSize: {x: 100, y: 100}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 101, y: 121}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 27}
   m_Panes:
   - {fileID: 27}
@@ -370,23 +370,23 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: ac4fffff
-      m_LastClickedID: -45140
-      m_ExpandedIDs: a42efaffd0a8fcffd6a8fcffe2a8fcff0e20fdff0645fdff0e45fdffb459fdffd636feff34fbffff7e640800be680800f4750800948a08001af50900aafa0900
+      m_SelectedIDs: e6cc0000
+      m_LastClickedID: 52454
+      m_ExpandedIDs: e446ffff34fbffff86be0100bccb01006c000200
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: Armature
-        m_OriginalName: Armature
+        m_Name: 
+        m_OriginalName: 
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: 755572
+        m_UserData: 0
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 0
+        m_OriginalEventType: 11
         m_IsRenamingFilename: 0
         m_ClientGUIView: {fileID: 6}
       m_SearchString: 
@@ -420,7 +420,7 @@ MonoBehaviour:
     x: 343
     y: 73
     width: 1024
-    height: 707
+    height: 441
   m_ViewDataDictionary: {fileID: 0}
   m_OverlayCanvas:
     m_LastAppliedPresetName: Default
@@ -699,9 +699,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 50.057915, y: 7.5016403, z: 444.54626}
+    m_Target: {x: 21.751059, y: 4.3091125, z: 443.38556}
     speed: 2
-    m_Value: {x: 50.057915, y: 7.5016403, z: 444.54626}
+    m_Value: {x: -160.52838, y: 14.650352, z: 345.6153}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -748,9 +748,9 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: 0.01059416, y: 0.8395328, z: -0.016370168, w: 0.54300797}
+    m_Target: {x: -0.059902914, y: 0.87212956, z: -0.11047457, w: -0.47291836}
     speed: 2
-    m_Value: {x: 0.009756762, y: 0.84034765, z: -0.015125061, w: 0.5417489}
+    m_Value: {x: -0.01889462, y: 0.9067504, z: -0.040823784, w: -0.41926152}
   m_Size:
     m_Target: 10
     speed: 2
@@ -801,9 +801,9 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 343
-    y: 801
+    y: 535
     width: 1024
-    height: 190
+    height: 456
   m_ViewDataDictionary: {fileID: 0}
   m_OverlayCanvas:
     m_LastAppliedPresetName: Default
@@ -821,22 +821,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/KoboldKare/ScriptableObjects/SoundPacks
+    - Assets/best boy prefab/Best Boi High-Def Edition
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/KoboldKare/ScriptableObjects/SoundPacks
+  - Assets/best boy prefab/Best Boi High-Def Edition
   m_LastFoldersGridSize: 16
   m_LastProjectPath: C:\Users\Monarch\Desktop\monarchs map workd for kobold care\KoboldKare-Map-work
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 870}
-    m_SelectedIDs: 62480100
-    m_LastClickedID: 84066
-    m_ExpandedIDs: 000000000c4501000e45010010450100124501001445010016450100184501001a4501001c4501001e4501002045010022450100244501001e480100204801002448010000ca9a3b
+    scrollPos: {x: 0, y: 207}
+    m_SelectedIDs: 168e0100
+    m_LastClickedID: 101910
+    m_ExpandedIDs: 00000000fc470100fe47010000480100024801000448010006480100084801000a4801000c4801000e480100104801001248010014480100664a010000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -864,7 +864,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000000c4501000e45010010450100124501001445010016450100184501001a4501001c4501001e450100204501002245010024450100
+    m_ExpandedIDs: 00000000fc470100fe47010000480100024801000448010006480100084801000a4801000c4801000e480100104801001248010014480100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -916,7 +916,7 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
     m_NewAssetIndexInList: -1
-    m_ScrollPosition: {x: 0, y: 280.5}
+    m_ScrollPosition: {x: 0, y: 0}
     m_GridSize: 16
   m_SkipHiddenPackages: 0
   m_DirectoriesAreaWidth: 78
@@ -2575,7 +2575,7 @@ MonoBehaviour:
   m_SerializedViewValues:
   - C:\Users\Monarch\Desktop\monarchs map workd for kobold care\KoboldKare-Map-work\Library\PlayModeViewStates\66ce4ce080e55564d955e63aeb4b1754
   m_PlayModeViewName: GameView
-  m_ShowGizmos: 1
+  m_ShowGizmos: 0
   m_TargetDisplay: 0
   m_ClearColor: {r: 0, g: 0, b: 0, a: 0}
   m_TargetSize: {x: 1920, y: 1080}
@@ -2585,7 +2585,7 @@ MonoBehaviour:
   m_EnterPlayModeBehavior: 0
   m_UseMipMap: 0
   m_VSyncEnabled: 0
-  m_Gizmos: 1
+  m_Gizmos: 0
   m_Stats: 1
   m_SelectedSizes: 03000000000000000000000000000000000000000000000000000000000000000000000000000000
   m_ZoomArea:
