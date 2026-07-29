@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ad9fad2455c6d394d80803efac1e5096
+guid: 81bf995cca71a2c4b8a1f3435fd74b24
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -79,18 +79,6 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: Server
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
