@@ -28,7 +28,10 @@ public class GenericPurchasable : GenericUsable, IPunObservable, ISavable {
     private AudioPack purchaseSoundPack;
     private bool inStock {
         get {
-            return display.activeInHierarchy;
+            if (display) {
+                return display.activeInHierarchy;
+            }
+            return false;
         }
     }
     private GameObject display;
@@ -44,7 +47,9 @@ public class GenericPurchasable : GenericUsable, IPunObservable, ISavable {
         source.maxDistance = 25f;
         source.SetCustomCurve(AudioSourceCurveType.CustomRolloff, GameManager.instance.volumeCurve);
         source.outputAudioMixerGroup = GameManager.instance.soundEffectGroup;
-        SwapTo(spawn.photonName);
+        if (spawn != null && !string.IsNullOrEmpty(spawn.photonName)) {
+            SwapTo(spawn.photonName);
+        }
     }
     public override Sprite GetSprite(Kobold k) {
         return displaySprite;
@@ -160,7 +165,7 @@ public class GenericPurchasable : GenericUsable, IPunObservable, ISavable {
         k.GetComponent<MoneyHolder>().ChargeMoney(price);
     }
     public override bool CanUse(Kobold k) {
-        return display.activeInHierarchy && (k == null || k.GetComponent<MoneyHolder>().HasMoney(price));
+        return (display != null && display.activeInHierarchy) && (k == null || k.GetComponent<MoneyHolder>().HasMoney(price));
     }
     [PunRPC]
     public override void Use() {

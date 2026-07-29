@@ -11,6 +11,7 @@ public class PhotonRoomListSpawner : MonoBehaviourPunCallbacks, ILobbyCallbacks,
     public GameObject roomPrefab;
     public GameObject hideOnRoomsFound;
     private List<GameObject> roomPrefabs = new List<GameObject>();
+    [SerializeField] private NetworkManager networkManager;
     
     private static string[] blacklist;
 
@@ -51,7 +52,7 @@ public class PhotonRoomListSpawner : MonoBehaviourPunCallbacks, ILobbyCallbacks,
 
         room.GetComponent<Button>().onClick.RemoveAllListeners();
         room.GetComponent<Button>().onClick.AddListener(() => {
-            NetworkManager.instance.JoinMatch(info.Name);
+            NetworkManager.instance.JoinMatch(info);
         });
     }
 

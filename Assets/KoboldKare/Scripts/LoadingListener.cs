@@ -1,34 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LoadingListener : MonoBehaviour {
     void Start() {
-        LevelLoader.instance.sceneLoadStart += SceneLoadStart;
-        LevelLoader.instance.sceneLoadEnd += SceneLoadEnd;
-        gameObject.SetActive(false);
+        MapLoadingInterop.OnMapStartLoad += OnMapLoad;
     }
-    void SceneLoadStart() {
-        gameObject.SetActive(true);
-        gameObject.GetComponent<CanvasGroup>().alpha = 1f;
+
+    private void OnMapLoad(BoxedSceneLoad obj) {
+        MainMenu.ShowMenuStatic(MainMenu.MainMenuMode.Loading);
+        obj.OnCompleted += () => {
+            if (GameManager.InLevel()) {
+                MainMenu.ShowMenuStatic(MainMenu.MainMenuMode.None);
+            } else {
+                MainMenu.ShowMenuStatic(MainMenu.MainMenuMode.MainMenu);
+            }
+        };
     }
     void OnDestroy() {
-        LevelLoader.instance.sceneLoadStart -= SceneLoadStart;
-        LevelLoader.instance.sceneLoadEnd -= SceneLoadEnd;
-    }
-    void SceneLoadEnd() {
-        gameObject.SetActive(false);
-        gameObject.GetComponent<CanvasGroup>().alpha = 0f;
-    }
-
-    public void Show(){
-        gameObject.SetActive(true);
-        gameObject.GetComponent<CanvasGroup>().alpha = 1f;
-    }
-
-    public void Hide(){
-        gameObject.SetActive(false);
-        gameObject.GetComponent<CanvasGroup>().alpha = 0f;
+        MapLoadingInterop.OnMapStartLoad -= OnMapLoad;
     }
 }

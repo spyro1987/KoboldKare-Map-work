@@ -27,9 +27,11 @@ public class MapSelectUI : MonoBehaviour {
             Destroy(obj);
         }
         panels.Clear();
-        
+        if (!ModManager.GetFinishedLoading()) {
+            return;
+        }
         foreach (var map in PlayableMapDatabase.GetPlayableMaps()) {
-            if (selectedMap == null) {
+            if (selectedMap == null && ModManager.GetReady() && ModManager.GetFinishedLoading()) {
                 OnSelectMap(map);
             }
             var obj = Instantiate(previewSelectPanelPrefab.gameObject, transform);
@@ -40,8 +42,10 @@ public class MapSelectUI : MonoBehaviour {
     }
     private void OnDisable() {
         ModManager.RemoveFinishedLoadingListener(Regenerate);
-        foreach (var obj in panels) {
-            Destroy(obj);
+        if (panels != null) {
+            foreach (var obj in panels) {
+                Destroy(obj);
+            }
         }
     }
 
@@ -52,9 +56,12 @@ public class MapSelectUI : MonoBehaviour {
     public PlayableMap GetSelectedMap() => selectedMap;
 
     public void OnSelectMap(PlayableMap map) {
-        mapTitleText.text = map.title;
-        mapDescriptionText.text = map.description;
-        mapPreview.sprite = map.preview;
+        if (map == selectedMap) {
+            MapSelector.StaticConfirm();
+        }
+        mapTitleText.text = map.GetTitle();
+        mapDescriptionText.text = map.GetDescription();
+        mapPreview.sprite = map.GetPreview();
         selectedMap = map;
     }
 }

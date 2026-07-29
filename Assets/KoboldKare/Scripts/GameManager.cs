@@ -2,9 +2,10 @@ using System;
 using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using Photon.Pun;
-using UnityEngine.AddressableAssets;
+using UnityEngine.Audio;
+using UnityEngine.InputSystem;
+using UnityScriptableSettings;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -13,9 +14,11 @@ public class GameManager : MonoBehaviour {
     public static GameManager instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
     [SerializeField]
     private GameObject mainCanvas;
+    [SerializeField] private AudioMixerGroup musicMixer;
+    public static AudioMixerGroup GetMusicMixer() => instance.musicMixer;
     public static void SetUIVisible(bool visible) => instance.UIVisible(visible);
-    public UnityEngine.Audio.AudioMixerGroup soundEffectGroup;
-    public UnityEngine.Audio.AudioMixerGroup soundEffectLoudGroup;
+    public AudioMixerGroup soundEffectGroup;
+    public AudioMixerGroup soundEffectLoudGroup;
     public LayerMask precisionGrabMask;
     public LayerMask walkableGroundMask;
     public LayerMask waterSprayHitMask;
@@ -25,21 +28,71 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private NetworkManager networkManager;
     public AnimationCurve volumeCurve;
-    public GameObject selectOnPause;
-    public AudioClip buttonHoveredMenu, buttonHoveredSubmenu, buttonClickedMenu, buttonClickedSubmenu;
-    public LoadingListener loadListener;
-    [SerializeField]
-    private GameObject MultiplayerTab;
-    [SerializeField]
-    private GameObject OptionsTab;
-    [SerializeField]
-    private GameObject MainViewTab;
-    [SerializeField]
-    private GameObject CreditsTab;
-    [SerializeField]
-    private GameObject ModdingTab;
-    [SerializeField]
-    private GameObject SaveTab;
+    public AudioPack buttonHovered, buttonClicked;
+
+    private PlayerControls controls;
+
+    public static PlayerControls GetPlayerControls() {
+        if (instance.controls == null) {
+            instance.controls = new PlayerControls();
+            instance.controls.Enable();
+            instance.controls.Player.Gib.performed += OnGibInput;
+            instance.controls.UI.Chat.performed += OnChatInput;
+            instance.controls.UI.ViewStats.performed += OnViewEquipment;
+        }
+        return instance.controls;
+    }
+
+    private static void OnGibInput(InputAction.CallbackContext ctx) {
+        if (PhotonNetwork.LocalPlayer.TagObject is Kobold kobold) {
+            PhotonNetwork.Destroy(kobold.gameObject);
+        }
+    }
+    
+    public static bool InLevel() {
+        return SceneManager.GetActiveScene().name != "MainMenu" && SceneManager.GetActiveScene().name != "ErrorScene";
+    }
+    
+    private static void OnChatInput(InputAction.CallbackContext ctx) {
+        if (MainMenu.GetCurrentMode() != MainMenu.MainMenuMode.Chat && InLevel() && MainMenu.GetCurrentMode() == MainMenu.MainMenuMode.None) {
+            MainMenu.ShowMenuStatic(MainMenu.MainMenuMode.Chat);
+        }
+    }
+    
+    private static void OnViewEquipment(InputAction.CallbackContext ctx) {
+        if (MainMenu.GetCurrentMode() != MainMenu.MainMenuMode.Equipment && InLevel() && MainMenu.GetCurrentMode() == MainMenu.MainMenuMode.None) {
+            MainMenu.ShowMenuStatic(MainMenu.MainMenuMode.Equipment);
+        }
+    }
+    
+    public static void SetControlsActive(bool active) {
+        if (!active) {
+            GetPlayerControls().Player.Disable();
+        } else {
+            GetPlayerControls().Player.Enable();
+        }
+    }
+    [SerializeField] private AudioMixer mixer;
+
+    public static void FadeInAudio() {
+        instance.StartCoroutine(instance.FadeInAudioRoutine());
+    }
+
+    IEnumerator FadeInAudioRoutine() {
+        instance.mixer.SetFloat("MasterVolume", -80f);
+        var originalVolume = ((SettingFloat)SettingsManager.GetSetting("MasterVolume")).GetValue();
+        var originalVolumeLog = Mathf.Log(Mathf.Max(originalVolume, 0.01f)) * 20f;
+        
+        float startTime = Time.unscaledTime;
+        float duration = 5f;
+        while (Time.unscaledTime - startTime < duration) {
+            float t = (Time.unscaledTime - startTime) / duration;
+            instance.mixer.SetFloat("MasterVolume", Mathf.Lerp(-80f, originalVolumeLog, t));
+            yield return null;
+        }
+        instance.mixer.SetFloat("MasterVolume", originalVolumeLog);
+    }
+
 
     [SerializeField] private PrefabDatabase penisDatabase;
     [SerializeField] private PrefabDatabase playerDatabase;
@@ -70,58 +123,9 @@ public class GameManager : MonoBehaviour {
             GameObject freshGameManager = Instantiate( AssetDatabase.LoadAssetAtPath<GameObject>(path));
             instance = freshGameManager.GetComponent<GameManager>();
             DontDestroyOnLoad(freshGameManager);
-            Debug.LogError("Spawned a GameManager on the fly due to misconfigured scene. This is not intentional, and breaks hard references to required libraries. You should place a GameManager prefab into the scene.");
+            Debug.Log("Spawned a GameManager on the fly.");
         }
     #endif
-
-    [HideInInspector]
-    public bool isPaused = false;
-
-    public void Pause(bool pause) {
-        isPaused = pause;
-        PopupHandler.instance.ClearAllPopups();
-        if (!pause) {
-            MultiplayerTab.gameObject.SetActive(false);
-            OptionsTab.gameObject.SetActive(false);
-            CreditsTab.gameObject.SetActive(false);
-            ModdingTab.gameObject.SetActive(false);
-            SaveTab.gameObject.SetActive(false);
-            MainViewTab.gameObject.SetActive(true);
-        }
-        if (!isPaused && SceneManager.GetActiveScene().name != "MainMenu") {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        } else {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-        mainCanvas.SetActive(isPaused || SceneManager.GetActiveScene().name == "MainMenu");
-        if (!PhotonNetwork.OfflineMode || SceneManager.GetActiveScene().name == "MainMenu") {
-            Time.timeScale = 1.0f;
-            return;
-        }
-        Time.timeScale = isPaused ? 0.0f : 1.0f;
-        if (selectOnPause != null) {
-            selectOnPause.GetComponent<Selectable>().Select();
-        } else {
-            Debug.LogError(
-                "[GameManager] selectOnPause is not bound to the resume button! Button was not selected for controller support.");
-        }
-
-        if (pause) {
-            OrbitCamera.SetTracking(false);
-        }
-        if (!pause) {
-            OrbitCamera.SetTracking(true);
-            try {
-                InputOptions.SaveControls();
-                UnityScriptableSettings.SettingsManager.Save();
-            } catch (Exception e) {
-                Debug.LogException(e);
-                Debug.LogError("Failed to save config");
-            }
-        }
-    }
 
     public void Quit() {
         ModManager.SaveConfig();
@@ -134,48 +138,35 @@ public class GameManager : MonoBehaviour {
 #endif
     }
 
-    void Start() {
+    private void Awake() {
         if (instance == null) {
             instance = this;
         } else if (instance != this) {
             Destroy(gameObject);
+        }
+    }
+
+    void Start() {
+        if (instance != this) {
             return;
         }
-
         ModManager.AddFinishedLoadingListener(ReloadMapIfInEditor);
         // FIXME: Photon isn't initialized early enough for scriptable objects to add themselves as a callback...
         // So I do it here-- I guess!
         PhotonNetwork.AddCallbackTarget(NetworkManager.instance);
         DontDestroyOnLoad(gameObject);
         SaveManager.Init();
+        var control = GetPlayerControls();
+        OrbitCamera.SetLookActions(control.Player.Look, control.Player.LookJoystick);
     }
 
     private void ReloadMapIfInEditor() {
-        if (Application.isEditor && SceneManager.GetActiveScene().name != "MainMenu"  && SceneManager.GetActiveScene().name != "ErrorScene" && !reloadedSceneAlready) {
-            StartCoroutine(ReloadMapRoutine());
+        var mapName = SceneManager.GetActiveScene().name;
+        if (Application.isEditor && mapName != "MainMenu"  && mapName != "ErrorScene" && !reloadedSceneAlready) {
+            NetworkManager.instance.SetSelectedMap(mapName);
+            NetworkManager.instance.StartSinglePlayer();
         }
         reloadedSceneAlready = true;
-    }
-
-    private IEnumerator ReloadMapRoutine() {
-        Debug.LogWarning("Reloading scene due to mods not being ready yet...");
-        bool found = false;
-        PlayableMap selectedMap = null;
-        foreach(var playableMap in PlayableMapDatabase.GetPlayableMaps()) {
-            if (SceneManager.GetActiveScene().name != playableMap.unityScene.GetName()) continue;
-            NetworkManager.instance.SetSelectedMap(playableMap);
-            selectedMap = playableMap;
-            found = true;
-            break;
-        }
-
-        if (!found) {
-            throw new UnityException($"Failed to find a PlayableMap instance for the map {SceneManager.GetActiveScene().name}! Please make one!");
-        }
-
-        yield return LevelLoader.instance.LoadLevel((string)selectedMap.unityScene.RuntimeKey);
-        NetworkManager.instance.StartSinglePlayer();
-        Pause(false);
     }
 
     private void UIVisible(bool visible) {
@@ -210,10 +201,11 @@ public class GameManager : MonoBehaviour {
 
     private IEnumerator QuitToMenuRoutine() {
         PhotonNetwork.Disconnect();
-        yield return new WaitUntil(()=>!PhotonNetwork.IsConnected);
         ObjectiveManager.GetCurrentObjective()?.Unregister();
-        yield return LevelLoader.instance.LoadLevel("MainMenu");
+        var handle = MapLoadingInterop.RequestMapLoad("MainMenu");
+        yield return new WaitUntil(()=>handle.IsDone);
         PhotonNetwork.OfflineMode = false;
+        yield return ModManager.SetLoadedMods(ModManager.GetPlayerConfig());
     }
 
     public void SpawnAudioClipInWorld(AudioClip clip, Vector3 position, float volume = 1f, UnityEngine.Audio.AudioMixerGroup group = null) {
@@ -257,24 +249,29 @@ public class GameManager : MonoBehaviour {
     }
 
     public void PlayUISFX(ButtonMouseOver btn, ButtonMouseOver.EventType evtType) {
-        switch (btn.buttonType) {
-            case ButtonMouseOver.ButtonTypes.Default when evtType == ButtonMouseOver.EventType.Hover:
-                SpawnAudioClipInWorld(buttonHoveredMenu, Vector3.zero);
+        if (!ModManager.GetReady()) {
+            return;
+        }
+        var camera = Camera.main;
+        if (!camera) {
+            camera = Camera.current;
+        }
+        if (!camera) {
+            return;
+        }
+
+        if (!buttonHovered || !buttonClicked) {
+            return;
+        }
+        
+        switch (evtType) {
+            case ButtonMouseOver.EventType.Hover:
+                var sourceb = AudioPack.PlayClipAtPoint(buttonHovered, camera.transform.position);
+                sourceb.spatialBlend = 0f;
                 break;
-            case ButtonMouseOver.ButtonTypes.Default:
-                SpawnAudioClipInWorld(buttonClickedMenu, Vector3.zero);
-                break;
-            case ButtonMouseOver.ButtonTypes.Save when evtType == ButtonMouseOver.EventType.Hover:
-                SpawnAudioClipInWorld(buttonHoveredSubmenu, Vector3.zero);
-                break;
-            case ButtonMouseOver.ButtonTypes.Save:
-                SpawnAudioClipInWorld(buttonClickedSubmenu, Vector3.zero);
-                break;
-            case ButtonMouseOver.ButtonTypes.MainMenu:
-                break;
-            case ButtonMouseOver.ButtonTypes.Option:
-                break;
-            case ButtonMouseOver.ButtonTypes.NoScale:
+            case ButtonMouseOver.EventType.Click:
+                var sourcea = AudioPack.PlayClipAtPoint(buttonClicked, camera.transform.position);
+                sourcea.spatialBlend = 0f;
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

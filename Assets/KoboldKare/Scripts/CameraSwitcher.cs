@@ -51,6 +51,10 @@ public class CameraSwitcher : MonoBehaviour {
     private CameraMode? mode = null;
     private const float thirdPersonCameraDistance = 1.5f;
 
+    public CameraMode? GetCameraMode() {
+        return mode;
+    }
+
     void OnKoboldSizeChange(float newSize) {
         crouchPivot.SetDesiredDistanceFromPivot(thirdPersonCameraDistance * newSize);
         headPivot.SetDesiredDistanceFromPivot(thirdPersonCameraDistance * newSize);
@@ -72,6 +76,13 @@ public class CameraSwitcher : MonoBehaviour {
     }
 
     void OnEnable() {
+        var controls = GameManager.GetPlayerControls();
+        controls.Player.FirstPerson.performed += OnFirstPersonInput;
+        controls.Player.ThirdPerson.performed += OnThirdPersonInput;
+        controls.Player.SwitchCamera.performed += OnSwitchCameraInput;
+        controls.Player.HideHUD.performed += OnHideHUDInput;
+        controls.Player.FreeCamera.performed += OnFreeCameraInput;
+        
         fovSetting = (SettingFloat)SettingsManager.GetSetting("CameraFOV");
         float fov;
         if (fovSetting != null) {
@@ -121,7 +132,6 @@ public class CameraSwitcher : MonoBehaviour {
             freeCamObj.transform.SetParent(GetComponentInParent<CharacterDescriptor>().transform);
             freeCamObj.transform.position = transform.position;
             freeCamController = freeCamObj.AddComponent<SimpleCameraController>();
-            freeCamController.SetControls(GetComponent<PlayerInput>());
             freeCamController.enabled = false;
             
             freecamConfiguration = new OrbitCameraBasicConfiguration();
@@ -221,6 +231,12 @@ public class CameraSwitcher : MonoBehaviour {
     }
 
     void OnDisable() {
+        var controls = GameManager.GetPlayerControls();
+        controls.Player.FirstPerson.performed -= OnFirstPersonInput;
+        controls.Player.ThirdPerson.performed -= OnThirdPersonInput;
+        controls.Player.SwitchCamera.performed -= OnSwitchCameraInput;
+        controls.Player.HideHUD.performed -= OnHideHUDInput;
+        controls.Player.FreeCamera.performed -= OnFreeCameraInput;
         fovSetting = (SettingFloat)SettingsManager.GetSetting("CameraFOV");
         if (fovSetting != null) {
             fovSetting.changed -= OnFOVChanged;
@@ -250,7 +266,7 @@ public class CameraSwitcher : MonoBehaviour {
         }
     }
 
-    public void OnSwitchCamera() {
+    private void OnSwitchCameraInput(InputAction.CallbackContext callbackContext) {
         if (mode == null) {
             return;
         }
@@ -259,7 +275,7 @@ public class CameraSwitcher : MonoBehaviour {
         SwitchCamera((CameraMode)index);
     }
 
-    public void OnHideHUD() {
+    private void OnHideHUDInput(InputAction.CallbackContext callbackContext) {
         if (!FPSCanvas.activeInHierarchy) {
             FPSCanvas.SetActive(true);
         } else {
@@ -267,19 +283,13 @@ public class CameraSwitcher : MonoBehaviour {
         }
     }
 
-    public void OnPause() {
-        if (!FPSCanvas.activeInHierarchy) {
-            FPSCanvas.SetActive(true);
-        }
-    }
-
-    public void OnFirstPerson() {
+    private void OnFirstPersonInput(InputAction.CallbackContext callbackContext) {
         SwitchCamera(CameraMode.FirstPerson);
     }
-    public void OnThirdPerson() {
+    private void OnThirdPersonInput(InputAction.CallbackContext callbackContext) {
         SwitchCamera(CameraMode.ThirdPerson);
     }
-    public void OnFreeCamera() {
+    private void OnFreeCameraInput(InputAction.CallbackContext callbackContext) {
         SwitchCamera(CameraMode.FreeCam);
     }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,28 +9,38 @@ using UnityEngine.UI;
 public class ButtonMouseOver : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler, ISubmitHandler, IPointerClickHandler {
     private Vector3 defaultLocalScale;
     private Button internalAttachedButton;
-    private Button attachedButton {
-        get {
-            if (internalAttachedButton == null) {
-                internalAttachedButton = GetComponent<Button>();
-            }
-            return internalAttachedButton;
-        }
-    }
+    private const float scaleFactor = 1.05f;
+    private const float scaleDuration = 0.2f;
+    
+    [SerializeField, SubclassSelector, SerializeReference]
+    private List<GameEventResponse> OnButtonPress = new List<GameEventResponse>();
+    
     private WaitForEndOfFrame endOfFrame = new WaitForEndOfFrame();
 
-    public enum ButtonTypes{Default, MainMenu, Option, Save, NoScale}
     public enum EventType{ Hover, Click };
-    public EventType lastEvent;
-    public ButtonTypes buttonType;
+    
+    private EventType lastEvent = EventType.Hover;
+    private Button attachedButton;
+
+    void Awake() {
+        attachedButton = GetComponent<Button>();
+        attachedButton.onClick.AddListener(() => {
+            if (OnButtonPress != null) {
+                foreach(var response in OnButtonPress) {
+                    response?.Invoke(this);
+                }
+            }
+        });
+    }
+
+    private void OnDisable() {
+        transform.localScale = defaultLocalScale;
+    }
 
     private void Start() {
         defaultLocalScale = transform.localScale;
     }
     public IEnumerator ScaleBack(float scaleDuration) {
-        if (buttonType == ButtonTypes.NoScale) {
-            yield break;
-        }
         float startTime = Time.unscaledTime;
         while (isActiveAndEnabled && attachedButton.interactable && (startTime + scaleDuration) > Time.unscaledTime ) {
             transform.localScale = Vector3.Lerp(transform.localScale, defaultLocalScale, (Time.unscaledTime-startTime)/scaleDuration);
@@ -38,15 +49,12 @@ public class ButtonMouseOver : MonoBehaviour, IPointerEnterHandler, IPointerExit
         transform.localScale = defaultLocalScale;
     }
     public IEnumerator ScaleUp(float scaleDuration) {
-        if (buttonType == ButtonTypes.NoScale) {
-            yield break;
-        }
         float startTime = Time.unscaledTime;
         while (isActiveAndEnabled && attachedButton.interactable && (startTime + scaleDuration) > Time.unscaledTime ) {
-            transform.localScale = Vector3.Lerp(transform.localScale, defaultLocalScale*1.1f, (Time.unscaledTime-startTime)/scaleDuration);
+            transform.localScale = Vector3.Lerp(transform.localScale, defaultLocalScale*scaleFactor, (Time.unscaledTime-startTime)/scaleDuration);
             yield return endOfFrame;
         }
-        transform.localScale = defaultLocalScale*1.1f;
+        transform.localScale = defaultLocalScale*scaleFactor;
     }
 
     public void OnPointerEnter(PointerEventData eventData) {
@@ -54,7 +62,7 @@ public class ButtonMouseOver : MonoBehaviour, IPointerEnterHandler, IPointerExit
             return;
         }
         StopAllCoroutines();
-        StartCoroutine(ScaleUp(0.3f));
+        StartCoroutine(ScaleUp(scaleDuration));
         lastEvent = EventType.Hover;
         PlaySFX();
     }
@@ -64,7 +72,7 @@ public class ButtonMouseOver : MonoBehaviour, IPointerEnterHandler, IPointerExit
             return;
         }
         StopAllCoroutines();
-        StartCoroutine(ScaleBack(0.3f));
+        StartCoroutine(ScaleBack(scaleDuration));
     }
 
     public void OnSelect(BaseEventData eventData) {
@@ -72,7 +80,7 @@ public class ButtonMouseOver : MonoBehaviour, IPointerEnterHandler, IPointerExit
             return;
         }
         StopAllCoroutines();
-        StartCoroutine(ScaleUp(0.3f));
+        StartCoroutine(ScaleUp(scaleDuration));
         lastEvent = EventType.Hover;
         PlaySFX();
     }
@@ -82,15 +90,21 @@ public class ButtonMouseOver : MonoBehaviour, IPointerEnterHandler, IPointerExit
             return;
         }
         StopAllCoroutines();
-        StartCoroutine(ScaleBack(0.3f));
+        StartCoroutine(ScaleBack(scaleDuration));
     }
 
     public void OnSubmit(BaseEventData eventData){
+        if (!attachedButton.interactable) {
+            return;
+        }
         lastEvent = EventType.Click;
         PlaySFX();
     }
 
     public void OnPointerClick(PointerEventData eventData){
+        if (!attachedButton.interactable) {
+            return;
+        }
         lastEvent = EventType.Click;
         PlaySFX();
     }

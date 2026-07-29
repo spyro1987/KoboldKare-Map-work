@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Photon.Pun;
 using System.IO;
 using NetStack.Serialization;
@@ -47,8 +48,7 @@ public class GenericReagentContainer : NoTouchGenericReagentContainer, IValuedGo
         {  true,   true,   true }, // Metabolize
         {  true,   true,   true }, // Vacuum
     };
-    [System.Serializable]
-    public class ReagentContainerChangedEvent : UnityEvent<ReagentContents, InjectType> {}
+    public delegate void ReagentContainerChangedEvent(ReagentContents c, InjectType t);
     public static bool IsMixable(ContainerType container, InjectType injectionType) {
         return ReagentMixMatrix[(int)injectionType,(int)container];
     }
@@ -64,7 +64,9 @@ public class GenericReagentContainer : NoTouchGenericReagentContainer, IValuedGo
 
     public Color GetColor() => GetContents().GetColor();
     public ContainerType type;
-    public ReagentContainerChangedEvent OnChange, OnFilled, OnEmpty;
+    
+    public event ReagentContainerChangedEvent OnChange, OnFilled, OnEmpty;
+    
     public bool isFull => Mathf.Approximately(GetContents().volume, GetContents().GetMaxVolume());
     public bool isEmpty => Mathf.Approximately(GetContents().volume,0f);
     public bool IsCleaningAgent() => GetContents().IsCleaningAgent();
@@ -76,9 +78,6 @@ public class GenericReagentContainer : NoTouchGenericReagentContainer, IValuedGo
     private bool emptied = false;
     protected override void Awake() {
         base.Awake();
-        OnChange ??= new ReagentContainerChangedEvent();
-        OnFilled ??= new ReagentContainerChangedEvent();
-        OnEmpty ??= new ReagentContainerChangedEvent();
         if (startingReagents != null) {
             foreach (var reagent in startingReagents) {
                 AddMix(reagent.reagent, reagent.volume, InjectType.Inject);
@@ -110,7 +109,9 @@ public class GenericReagentContainer : NoTouchGenericReagentContainer, IValuedGo
         if (!IsMixable(type, injectType) || !photonView.IsMine) {
             return false;
         }
-        GetContents().AddMix(ReagentDatabase.GetID(incomingReagent), volume, this);
+
+        GetContents().AddMix((byte)ReagentDatabase.GetID(incomingReagent), volume, this);
+
         OnReagentContentsChanged(injectType);
         return true;
     }
@@ -168,12 +169,12 @@ public class GenericReagentContainer : NoTouchGenericReagentContainer, IValuedGo
     public ReagentContents Peek() => new(GetContents());
     public ReagentContents Metabolize(float deltaTime) => GetContents().Metabolize(deltaTime);
     public void OverrideReagent(Reagent r) => GetContents().OverrideReagent(r.id, r.volume);
-    public void OverrideReagent(ScriptableReagent r, float volume) => GetContents().OverrideReagent(ReagentDatabase.GetID(r), volume);
+    public void OverrideReagent(ScriptableReagent r, float volume) => GetContents().OverrideReagent((byte)ReagentDatabase.GetID(r), volume);
     public void OnReagentContentsChanged(InjectType injectType) {
         //Debug.Log("[Generic Reagent Container] :: <Reagent Contents were changed on object "+gameObject.name+"!>");
         if (!filled && isFull) {
             //Debug.Log("[Generic Reagent Container] :: STATE_FILLING_TO_FULL_EVENT");
-            OnFilled.Invoke(GetContents(), injectType);
+            OnFilled?.Invoke(GetContents(), injectType);
             containerFilled?.Invoke(this);
         }
         //Debug.Log("[Generic Reagent Container] :: STATE FILLED AND ISFULL: "+filled+","+isFull);
@@ -213,7 +214,7 @@ public class GenericReagentContainer : NoTouchGenericReagentContainer, IValuedGo
     public override string ToString()
     {
         string blah = "[";
-        foreach(var reagent in ReagentDatabase.GetReagents()) {
+        foreach(var reagent in ReagentDatabase.GetAssets()) {
             if (GetContents().GetVolumeOf(reagent) != 0f) {
                 blah += reagent.name + ": " + GetContents().GetVolumeOf(reagent) + ", ";
             }

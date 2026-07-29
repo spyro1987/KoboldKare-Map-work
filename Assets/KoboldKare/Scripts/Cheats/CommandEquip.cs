@@ -1,8 +1,9 @@
+using Photon.Pun;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Photon.Pun;
 using UnityEngine;
 
 [System.Serializable]
@@ -18,11 +19,8 @@ public class CommandEquip : Command {
             throw new CheatsProcessor.CommandException("/equip requires at least one argument. Use `/list equipment` to find what you can equip.");
         }
 
-        Equipment tryEquipment;
-        try {
-            tryEquipment = EquipmentDatabase.GetEquipment(args[1]);
-        } catch (UnityException exception) {
-            throw new CheatsProcessor.CommandException(exception.Message);
+        if (!EquipmentDatabase.TryGetAsset(args[1], out var tryEquipment)) {
+            throw new CheatsProcessor.CommandException($"Equipment with name {args[1]} not found.");
         }
 
         if (tryEquipment != null) {
@@ -38,5 +36,24 @@ public class CommandEquip : Command {
         }
 
         throw new CheatsProcessor.CommandException($"There is no equipment with name {args[1]}.");
+    }
+
+    public override IEnumerable<AutocompleteResult> Autocomplete(int argumentIndex, string[] arguments, string text) {
+        if (!CheatsProcessor.GetCheatsEnabled()) {
+            yield break;
+        }
+        if (argumentIndex != 1) {
+            yield break;
+        }
+
+        var assets = EquipmentDatabase.GetAssetKeys();
+
+        foreach (var key in assets) {
+            if (key.Contains(text, StringComparison.OrdinalIgnoreCase)) {
+                yield return new(key);
+            }
+        }
+
+        yield return new("None", "None");
     }
 }

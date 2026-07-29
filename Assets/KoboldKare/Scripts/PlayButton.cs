@@ -1,13 +1,21 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayButton : MonoBehaviour {
-    private void Start() {
+    private void Awake() {
         GetComponent<Button>().onClick.AddListener(OnClick);
+        SceneManager.activeSceneChanged += OnSceneChange;
     }
+    private void OnDestroy() {
+        SceneManager.activeSceneChanged -= OnSceneChange;
+    }
+
+    private void OnSceneChange(Scene arg0, Scene arg1) {
+        gameObject.SetActive(!GameManager.InLevel());
+    }
+
 
     void OnClick() {
         GameManager.StartCoroutineStatic(LoadSinglePlayer());
@@ -21,7 +29,8 @@ public class PlayButton : MonoBehaviour {
             GetComponent<Button>().interactable = true;
             yield break;
         }
-        NetworkManager.instance.SetSelectedMap(handle.Result.playableMap);
+        MainMenu.ShowMenuStatic(MainMenu.MainMenuMode.Loading);
+        NetworkManager.instance.SetSelectedMap(handle.Result.playableMap.GetKey());
         NetworkManager.instance.StartSinglePlayer();
         GetComponent<Button>().interactable = true;
     }

@@ -265,15 +265,12 @@ public class CharacterDescriptor : MonoBehaviour, IPunInstantiateMagicCallback {
     {
         foreach (Equipment equip in equipOnSpawn)
         {
-            Equipment newEquip;
             if (equip == null)
             {
                 Debug.LogError("A null equipment piece was assigned to this kobold. Please double check its character descriptor");
                 continue;
             }
-            try {
-                newEquip = EquipmentDatabase.GetEquipment(equip.name);
-            } catch (UnityException exception) {
+            if (!EquipmentDatabase.TryGetAsset(equip.name, out var newEquip)) {
                 Debug.LogError("One or more on-spawn equipments assigned to this kobold are invalid. Please double check its character descriptor");
                 continue;
             }
@@ -504,6 +501,11 @@ public class CharacterDescriptor : MonoBehaviour, IPunInstantiateMagicCallback {
     }
 
     public void SetPlayerControlled(ControlType newControlType) {
+        // Don't allow multiple players to be set to LocalPlayer
+        if (newControlType == ControlType.LocalPlayer && PlayerPossession.TryGetPlayerInstance(out var player)) {
+            newControlType = ControlType.AIPlayer;
+        }
+        
         controlType = newControlType;
         if (possession != null) {
             possession.gameObject.SetActive(newControlType == ControlType.LocalPlayer);

@@ -11,7 +11,11 @@ public class EquipmentSkinnedMesh : Equipment {
     [SerializeField] private GameObject prefabContainingSkinnedMeshRenderers;
     [SerializeField] private SkinnedMeshTweak[] blendShapesToTweak;
     private List<SkinnedMeshRenderer> targets;
-    
+
+    public class EquipmentComponent : MonoBehaviour
+    {
+
+    }    
 
     private class BlendShapeCopier : MonoBehaviour {
         public SkinnedMeshRenderer source;
@@ -61,6 +65,7 @@ public class EquipmentSkinnedMesh : Equipment {
             }
         }
         BlendShapeCopier copier = instance.AddComponent<BlendShapeCopier>();
+        EquipmentComponent equipmentComp = instance.AddComponent<EquipmentComponent>();
         copier.source = targetSkinnedMesh;
         foreach (var skinnedMesh in instance.GetComponentsInChildren<SkinnedMeshRenderer>()) {
             Transform[] newBoneList = new Transform[targetSkinnedMesh.bones.Length];
@@ -71,19 +76,6 @@ public class EquipmentSkinnedMesh : Equipment {
             skinnedMesh.bones = newBoneList;
             skinnedMesh.rootBone = targetSkinnedMesh.rootBone;
             k.AddKoboldBodyRenderer(skinnedMesh);
-            foreach (var inflater in k.GetAllInflatableListeners()) {
-                if (inflater is InflatableBreast inflatableBreast) {
-                    inflatableBreast.AddTargetRenderer(skinnedMesh);
-                }
-
-                if (inflater is InflatableBelly belly) {
-                    belly.AddTargetRenderer(skinnedMesh);
-                }
-
-                if (inflater is InflatableBlendShape inflatableBlendShape) {
-                    inflatableBlendShape.AddTargetRenderer(skinnedMesh);
-                }
-            }
 
             if (jiggleSkin != null) {
                 jiggleSkin.targetSkins.Add(skinnedMesh);
@@ -102,20 +94,6 @@ public class EquipmentSkinnedMesh : Equipment {
         foreach (var skinnedMesh in search.GetComponentsInChildren<SkinnedMeshRenderer>()) {
             if (jiggleSkin != null) {
                 jiggleSkin.targetSkins.Remove(skinnedMesh);
-            }
-
-            foreach (var inflater in k.GetAllInflatableListeners()) {
-                if (inflater is InflatableBreast inflatableBreast) {
-                    inflatableBreast.RemoveTargetRenderer(skinnedMesh);
-                }
-
-                if (inflater is InflatableBelly belly) {
-                    belly.RemoveTargetRenderer(skinnedMesh);
-                }
-
-                if (inflater is InflatableBlendShape inflatableBlendShape) {
-                    inflatableBlendShape.RemoveTargetRenderer(skinnedMesh);
-                }
             }
 
             k.RemoveKoboldBodyRenderer(skinnedMesh);

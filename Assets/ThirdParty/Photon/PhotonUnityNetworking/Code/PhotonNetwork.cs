@@ -9,6 +9,7 @@
 // ----------------------------------------------------------------------------
 
 
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Photon.Pun
 {
@@ -1059,8 +1060,9 @@ namespace Photon.Pun
             monoRPCMethodsCache.Clear();
 
             // set up the NetworkingClient, protocol, etc
+            PrefabPool = new DefaultPool();
             OfflineMode = false;
-            ConnectionProtocol protocol = PhotonNetwork.PhotonServerSettings.AppSettings.Protocol;
+            ConnectionProtocol protocol = PhotonServerSettings.AppSettings.Protocol;
             NetworkingClient = new LoadBalancingClient(protocol);
             NetworkingClient.LoadBalancingPeer.QuickResendAttempts = 2;
             NetworkingClient.LoadBalancingPeer.SentCountAllowance = 9;
@@ -1080,7 +1082,6 @@ namespace Photon.Pun
 
 
             Application.runInBackground = PhotonServerSettings.RunInBackground;
-            PrefabPool = new DefaultPool();
 
             // RPC shortcut lookup creation (from list of RPCs, which is updated by Editor scripts)
             rpcShortcuts = new Dictionary<string, int>(PhotonNetwork.PhotonServerSettings.RpcList.Count);
@@ -3098,11 +3099,11 @@ namespace Photon.Pun
         /// <param name='levelName'>
         /// Name of the level to load. Make sure it's available to all clients in the same room.
         /// </param>
-        public static void LoadLevel(string levelName)
+        public static BoxedSceneLoad LoadLevel(string levelName)
         {
             if (PhotonHandler.AppQuits)
             {
-                return;
+                return new BoxedSceneLoad();
             }
 
             if (PhotonNetwork.AutomaticallySyncScene)
@@ -3112,8 +3113,8 @@ namespace Photon.Pun
 
             PhotonNetwork.IsMessageQueueRunning = false;
             loadingLevelAndPausedNetwork = true;
-            //_AsyncLevelLoadingOperation = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Single);
-            _AsyncLevelLoadingOperation = Addressables.LoadSceneAsync(levelName, LoadSceneMode.Single);
+            _AsyncLevelLoadingOperation = MapLoadingInterop.RequestMapLoad(levelName);
+            return _AsyncLevelLoadingOperation;
         }
 
         /// <summary>
@@ -3186,7 +3187,7 @@ namespace Photon.Pun
 
 
             // try to load the resource / asset (ServerSettings a.k.a. PhotonServerSettings)
-            photonServerSettings = Addressables.LoadAssetAsync<ServerSettings>(PhotonNetwork.ServerSettingsFileName).WaitForCompletion();
+            photonServerSettings = Addressables.LoadAssetAsync<ServerSettings>(ServerSettingsFileName).WaitForCompletion();
             
             if (photonServerSettings != null)
             {

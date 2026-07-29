@@ -17,7 +17,10 @@ public class PhotonGameObjectReference {
             }
 
             if (optionalDatabase != null) {
-                return optionalDatabase.GetRandom().GetKey();
+                var database = PrefabDatabaseDatabase.GetDatabase(optionalDatabase.name);
+                if (database && database.TryGetRandom(out var info)) {
+                    return info.GetKey();
+                }
             }
             
             return null;

@@ -116,13 +116,13 @@ public static class SaveManager {
         rootNode["version"] = PhotonNetwork.PhotonServerSettings.AppSettings.AppVersion;
         rootNode["mapName"] = SceneManager.GetActiveScene().name;
         foreach (var map in PlayableMapDatabase.GetPlayableMaps()) {
-            if (map.unityScene.GetName() != SceneManager.GetActiveScene().name) continue;
-            rootNode["mapKey"] = (string)map.unityScene.RuntimeKey;
+            if (map.GetSceneName() != SceneManager.GetActiveScene().name) continue;
+            rootNode["mapKey"] = map.GetKey();
             break;
         }
 
         JSONArray modList = new JSONArray();
-        foreach (var mod in ModManager.GetLoadedMods()) {
+        foreach (var mod in ModManager.GetModsWithLoadedAssets()) {
             JSONNode modNode = JSONNode.Parse("{}");
             modNode["title"] = mod.title;
             modNode["publishedFileId"] = mod.id.ToString();
@@ -205,9 +205,12 @@ public static class SaveManager {
     private static IEnumerator LoadRoutine(string filename) {
         loading = true;
         try {
+            MainMenu.ShowMenuStatic(MainMenu.MainMenuMode.Loading);
+            // Must wait for Photon to spawn the initial player.
+            yield return new WaitUntil(()=>PlayerPossession.TryGetPlayerInstance(out var player));
             CleanUpImmediate();
             // Gotta wait for photon to finally tick, no way to listen for that of course.
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSecondsRealtime(2f);
             JSONNode rootNode;
             using (FileStream file = new FileStream(filename, FileMode.Open, FileAccess.Read)) {
                 using StreamReader reader = new StreamReader(file);
@@ -290,20 +293,14 @@ public static class SaveManager {
                 }
             }
         } finally {
+            MainMenu.ShowMenuStatic(MainMenu.MainMenuMode.None);
             loading = false;
         }
     }
-
-    private static void LoadImmediate(string filename) {
-        //Debug.Log("[SaveManager] :: <Init Stage> File attempting to be loaded: "+filename);
-        // Don't load saves while online.
-        if (NetworkManager.instance.online || loading) {
-            return;
-        }
-        GameManager.StartCoroutineStatic(LoadRoutine(filename));
-    }
     private static IEnumerator MakeSureMapIsLoadedThenLoadSave(string filename) {
+        MainMenu.ShowMenuStatic(MainMenu.MainMenuMode.Loading);
         if (!IsLoadable(filename, out string lastError)) {
+            MainMenu.ShowMenuStatic(MainMenu.MainMenuMode.MainMenu);
             PopupHandler.instance.SpawnPopup("FailedLoad");
             throw new UnityException(lastError);
         }
@@ -333,40 +330,34 @@ public static class SaveManager {
                     }
                 }
             }
+            
+            // Backwards compatibility for old saves where Lilith and surf map were not mods.
+            if (rootNode.HasKey("version") && int.TryParse(rootNode["version"], out int versionNum) && versionNum <= 66) {
+                modStubs.Add(new ModManager.ModStub("Lilith Kobold", new PublishedFileId_t(2931099929), ModManager.ModSource.Any, "Lilith"));
+                modStubs.Add(new ModManager.ModStub("Surf Map Example", new PublishedFileId_t(2934088282), ModManager.ModSource.Any, "SurfMap"));
+            }
         }
 
         yield return ModManager.SetLoadedMods(modStubs);
         Debug.Log("Successfully set loaded mods");
         
         foreach (var map in PlayableMapDatabase.GetPlayableMaps()) {
-            if ((string)map.unityScene.RuntimeKey == mapKey || map.unityScene.GetName() == mapName) {
+            if (map.GetRepresentedByKey(mapKey) || map.GetRepresentedByKey(mapName)) {
                 Debug.Log("Set selected map");
-                NetworkManager.instance.SetSelectedMap(map);
+                NetworkManager.instance.SetSelectedMap(map.GetKey());
             }
         }
 
         //Ensure we show the player that the game is loading while we load
         if(SceneManager.GetActiveScene().name != mapName){
-            GameManager.instance.Pause(false);
-            GameManager.instance.loadListener.Show();
+            Pauser.SetPaused(false);
             Debug.Log("loading map...");
             yield return NetworkManager.instance.SinglePlayerRoutine();
         }
-        yield return new WaitForSecondsRealtime(0.25f);
-        try {
-            Debug.Log("Loaded immediately!");
-            LoadImmediate(filename);
-        } catch {
-            GameManager.instance.loadListener.Hide();
-            PopupHandler.instance.SpawnPopup("FailedLoad");
-            throw;
-        }
-
-        //Once loading is finished, hide loading screen
-        if(SceneManager.GetActiveScene().name != "MainMenu"){
-            GameManager.instance.loadListener.Hide();
-        }
-        GameManager.instance.Pause(false);
+        yield return LoadRoutine(filename);
+        
+        MainMenu.ShowMenuStatic(MainMenu.MainMenuMode.None);
+        Pauser.SetPaused(false);
     }
 
     private static bool NeedsUpgrade() {

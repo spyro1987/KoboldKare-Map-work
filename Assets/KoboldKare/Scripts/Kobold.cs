@@ -78,14 +78,40 @@ public class Kobold : GeneHolder, IGrabbable, IPunObservable, IPunInstantiateMag
     private List<Renderer> koboldBodyRenderers;
 
     public void AddKoboldBodyRenderer(Renderer renderer) {
+        if (!renderer) {
+            return;
+        }
         if (koboldBodyRenderers.Contains(renderer)) {
             return;
         }
+        
         koboldBodyRenderers.Add(renderer);
+        for (int i = koboldBodyRenderers.Count-1; i >= 0; i--) {
+            if (!koboldBodyRenderers[i]) {
+                koboldBodyRenderers.RemoveAt(i);
+            }
+        }
+        
         var array = koboldBodyRenderers.ToArray();
         foreach (JiggleRigRendererLOD lod in GetComponentsInChildren<JiggleRigRendererLOD>()) {
-            lod.SetRenderers(array);
+            if (lod) {
+                lod.SetRenderers(array);
+            }
         }
+        foreach (var inflater in GetAllInflatableListeners()) {
+            if (inflater is InflatableBreast inflatableBreast) {
+                inflatableBreast.AddTargetRenderer((SkinnedMeshRenderer)renderer);
+            }
+
+            if (inflater is InflatableBelly belly) {
+                belly.AddTargetRenderer((SkinnedMeshRenderer)renderer);
+            }
+
+            if (inflater is InflatableBlendShape inflatableBlendShape) {
+                inflatableBlendShape.AddTargetRenderer((SkinnedMeshRenderer)renderer);
+            }
+        }
+
     }
     
     public void RemoveKoboldBodyRenderer(Renderer renderer) {
@@ -93,9 +119,27 @@ public class Kobold : GeneHolder, IGrabbable, IPunObservable, IPunInstantiateMag
             return;
         }
         koboldBodyRenderers.Remove(renderer);
+        for (int i = 0; i < koboldBodyRenderers.Count; i++) {
+            if (!koboldBodyRenderers[i]) {
+                koboldBodyRenderers.RemoveAt(i);
+            }
+        }
         var array = koboldBodyRenderers.ToArray();
         foreach (JiggleRigRendererLOD lod in GetComponentsInChildren<JiggleRigRendererLOD>()) {
             lod.SetRenderers(array);
+        }
+        foreach (var inflater in GetAllInflatableListeners()) {
+            if (inflater is InflatableBreast inflatableBreast) {
+                inflatableBreast.RemoveTargetRenderer((SkinnedMeshRenderer)renderer);
+            }
+
+            if (inflater is InflatableBelly belly) {
+                belly.RemoveTargetRenderer((SkinnedMeshRenderer)renderer);
+            }
+
+            if (inflater is InflatableBlendShape inflatableBlendShape) {
+                inflatableBlendShape.RemoveTargetRenderer((SkinnedMeshRenderer)renderer);
+            }
         }
     }
 
@@ -183,7 +227,9 @@ public class Kobold : GeneHolder, IGrabbable, IPunObservable, IPunInstantiateMag
                 if (fruitView != null && fruitView.name.Contains(heartPrefab.photonName)) {
                     BitBuffer reagentBuffer = new BitBuffer(16);
                     ReagentContents loveContents = new ReagentContents();
-                    loveContents.AddMix(ReagentDatabase.GetReagent("Love").GetReagent(10f));
+                    if (ReagentDatabase.TryGetAsset("Love", out var loveReagent)) {
+                        loveContents.AddMix(loveReagent.GetReagent(10f));
+                    }
                     reagentBuffer.AddReagentContents(loveContents);
                     fruitView.RPC(nameof(GenericReagentContainer.ForceMixRPC), RpcTarget.All, reagentBuffer,
                         photonView.ViewID, (byte)GenericReagentContainer.InjectType.Inject);
@@ -269,7 +315,7 @@ public class Kobold : GeneHolder, IGrabbable, IPunObservable, IPunInstantiateMag
     }
 
     [PunRPC]
-    public void SetDickRPC(ushort dickID) {
+    public void SetDickRPC(short dickID) {
         SetGenes(GetGenes().With(dickEquip: dickID));
     }
 
@@ -281,14 +327,14 @@ public class Kobold : GeneHolder, IGrabbable, IPunObservable, IPunInstantiateMag
         // Removing the dick is now 0 instead of 255.
         // Dick IDs start at 1, but internally will remain starting at 0.
         // i.e. Getting the first dick from the dick database will be dickDatabase[dickID - 1].
-        if (newGenes.dickEquip == ushort.MinValue || GetGenes() == null || newGenes.dickEquip != GetGenes().dickEquip) {
+        if (newGenes.dickEquip == CommandDick.unEquipID || GetGenes() == null || newGenes.dickEquip != GetGenes().dickEquip) {
             if (dickObject != null) {
                 dickObject.GetComponentInChildren<DickDescriptor>().RemoveFrom(this);
                 Destroy(dickObject);
             }
         }
 
-        if ((GetGenes() == null || newGenes.dickEquip != GetGenes().dickEquip) && newGenes.dickEquip != ushort.MinValue) {
+        if ((GetGenes() == null || newGenes.dickEquip != GetGenes().dickEquip) && newGenes.dickEquip != CommandDick.unEquipID) {
             var dickDatabase = GameManager.GetPenisDatabase().GetValidPrefabReferenceInfos();
             PrefabDatabase.PrefabReferenceInfo selectedDick;
             if (newGenes.dickEquip <= dickDatabase.Count) {
@@ -323,13 +369,21 @@ public class Kobold : GeneHolder, IGrabbable, IPunObservable, IPunInstantiateMag
         bellyContainer.maxVolume = newGenes.bellySize;
         metabolizedContents.SetMaxVolume(newGenes.metabolizeCapacitySize);
         Vector4 hbcs = new Vector4(newGenes.hue/255f, newGenes.brightness/255f, 0.5f, newGenes.saturation/255f);
+        Vector4 chbcs = new Vector4(newGenes.clothingHue/255f, newGenes.brightness/255f, 0.5f, newGenes.saturation/255f);
         // Set color
         foreach (Renderer r in koboldBodyRenderers) {
             if (r == null) {
                 continue;
             }
             foreach (Material m in r.materials) {
-                m.SetVector(BrightnessContrastSaturation, hbcs);
+                // If it's an equipment, it will have the EquipmentComponent
+                if (r.gameObject.GetComponent<EquipmentSkinnedMesh.EquipmentComponent>() != null)
+                {
+                    m.SetVector(BrightnessContrastSaturation, chbcs);
+                } else
+                {
+                    m.SetVector(BrightnessContrastSaturation, hbcs);
+                }
             }
             foreach (var dickSet in activeDicks) {
                 foreach (var rendererMask in dickSet.dick.GetTargetRenderers()) {
@@ -393,7 +447,7 @@ public class Kobold : GeneHolder, IGrabbable, IPunObservable, IPunInstantiateMag
         body = GetComponent<Rigidbody>();
         lastPumpTime = Time.timeSinceLevelLoad;
         DayNightCycle.AddMetabolizationListener(OnMetabolizationEvent);
-        bellyContainer.OnChange.AddListener(OnBellyContentsChanged);
+        bellyContainer.OnChange += OnBellyContentsChanged;
         PlayAreaEnforcer.AddTrackedObject(photonView);
         if (GetGenes() == null) {
             SetGenes(new KoboldGenes().Randomize(gameObject.name));
@@ -401,7 +455,7 @@ public class Kobold : GeneHolder, IGrabbable, IPunObservable, IPunInstantiateMag
     }
     private void OnDestroy() {
         DayNightCycle.RemoveMetabolizationListener(OnMetabolizationEvent);
-        bellyContainer.OnChange.RemoveListener(OnBellyContentsChanged);
+        bellyContainer.OnChange -= OnBellyContentsChanged;
         PlayAreaEnforcer.RemoveTrackedObject(photonView);
     }
     [PunRPC]
@@ -518,10 +572,12 @@ public class Kobold : GeneHolder, IGrabbable, IPunObservable, IPunInstantiateMag
             newEnergy = Mathf.MoveTowards(newEnergy, 1.1f, passiveEnergyGeneration);
         }
         foreach (var pair in contents) {
-            ScriptableReagent reagent = ReagentDatabase.GetReagent(pair.id);
-            float processedAmount = pair.volume;
-            reagent.GetConsumptionEvent().OnConsume(this, reagent, ref processedAmount, ref consumedReagents, ref addbackReagents, ref genes, ref newEnergy);
-            pair.volume -= processedAmount;
+            if (ReagentDatabase.TryGetAsset(pair.id, out var reagent)) {
+                float processedAmount = pair.volume;
+                reagent.GetConsumptionEvent().OnConsume(this, reagent, ref processedAmount, ref consumedReagents,
+                    ref addbackReagents, ref genes, ref newEnergy);
+                pair.volume -= processedAmount;
+            }
         }
         bellyContainer.AddMix(contents, GenericReagentContainer.InjectType.Inject); 
         bellyContainer.AddMix(addbackReagents, GenericReagentContainer.InjectType.Inject);

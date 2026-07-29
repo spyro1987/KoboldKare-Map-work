@@ -1,43 +1,133 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using ExitGames.Client.Photon.StructWrapping;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.AddressableAssets.ResourceLocators;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
-using UnityScriptableSettings;
 
 public class PlayableMapPostProcessor : ModPostProcessor {
-    private List<PlayableMap> addedPlayableMaps;
-
-    public override void Awake() {
-        base.Awake();
-        addedPlayableMaps = new List<PlayableMap>();
+    private struct ModStubPlayableMapPair {
+        public ModManager.ModStub stub;
+        public PlayableMap playableMap;
     }
 
-    public override async Task LoadAllAssets(IList<IResourceLocation> locations) {
-        addedPlayableMaps.Clear();
-        var opHandle = Addressables.LoadAssetsAsync<PlayableMap>(locations, LoadPlayableMap);
-        await opHandle.Task;
-    }
+    private static List<ModStubPlayableMapPair> addedPlayableMaps = new();
 
-    private void LoadPlayableMap(PlayableMap playableMap) {
-        // This can happen if multiple maps try to load in a row.
-        if (playableMap == null) {
-            return;
+    public static async Task UnloadAllMaps() {
+        foreach (var pair in addedPlayableMaps) {
+            await ModManager.SetModAssetsAvailable(pair.stub, false);
         }
-        for (int i = 0; i < addedPlayableMaps.Count; i++) {
-            if (addedPlayableMaps[i].unityScene.RuntimeKey != playableMap.unityScene.RuntimeKey) continue;
-            PlayableMapDatabase.RemovePlayableMap(playableMap);
-            addedPlayableMaps.RemoveAt(i);
-            break;
-        }
+    }
+    
+    AsyncOperationHandle inherentAssetsHandle;
+
+    public override async Task Awake() {
+        await base.Awake();
+        inherentAssetsHandle = Addressables.LoadAssetsAsync<PlayableMap>(searchLabel.RuntimeKey, LoadInherentPlayableMap);
+        await inherentAssetsHandle.Task;
+    }
+    
+    private void LoadInherentPlayableMap(PlayableMap playableMap) {
         PlayableMapDatabase.AddPlayableMap(playableMap);
-        addedPlayableMaps.Add(playableMap);
     }
 
-    public override void UnloadAllAssets() {
-        foreach (var playableMap in addedPlayableMaps) {
-            PlayableMapDatabase.RemovePlayableMap(playableMap);
+    private Sprite DeepCopySprite(Sprite src) {
+        if (!src || !src.texture) return null;
+
+        Texture2D srcTex = src.texture;
+        Rect texRect = src.textureRect;
+        int w = (int)texRect.width;
+        int h = (int)texRect.height;
+
+        RenderTexture rt = RenderTexture.GetTemporary(srcTex.width, srcTex.height, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Default);
+        RenderTexture prev = RenderTexture.active;
+        try {
+            Graphics.Blit(srcTex, rt);
+            RenderTexture.active = rt;
+
+            Texture2D copyTex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            copyTex.ReadPixels(new Rect(texRect.x, texRect.y, w, h), 0, 0);
+            copyTex.Apply();
+
+            Vector2 pivotNorm = new Vector2(src.pivot.x / src.rect.width, src.pivot.y / src.rect.height);
+            Sprite newSprite = Sprite.Create(copyTex, new Rect(0, 0, w, h), pivotNorm, src.pixelsPerUnit, 0, SpriteMeshType.FullRect, src.border);
+            newSprite.name = src.name + "_copy";
+            return newSprite;
+        } finally {
+            RenderTexture.active = prev;
+            RenderTexture.ReleaseTemporary(rt);
+        }
+    }
+    
+    private PlayableMap DeepCopyPlayableMap(PlayableMap src) {
+        var playableMapCopy = Object.Instantiate(src);
+        Sprite newSprite = DeepCopySprite(src.GetPreview());
+        playableMapCopy.SetPreview(newSprite);
+        return playableMapCopy;
+    }
+    public override async Task HandleAddressableMod(ModManager.ModInfoData data, IResourceLocator locator) {
+        if (locator.Locate(searchLabel.RuntimeKey, typeof(PlayableMap), out var locations)) {
+            foreach (var resource in locations) {
+                var handle = Addressables.LoadAssetAsync<PlayableMap>(resource);
+                PlayableMap map = await handle.Task;
+                bool checkFound = false;
+                foreach (var check in addedPlayableMaps) {
+                    if (check.stub.GetRepresentedBy(data)) {
+                        checkFound = true;
+                        break;
+                    }
+                }
+                if (checkFound) {
+                    continue;
+                }
+                
+                if (!map) {
+                    Addressables.Release(handle);
+                    continue;
+                }
+                var copy = DeepCopyPlayableMap(map);
+                Addressables.Release(handle);
+                copy.stub = new ModManager.ModStub(data);
+                PlayableMapDatabase.AddPlayableMap(copy);
+                addedPlayableMaps.Add(new ModStubPlayableMapPair() {
+                    playableMap = copy,
+                    stub = new ModManager.ModStub(data)
+                });
+            }
+        }
+    }
+    
+
+    public override async Task HandleAssetBundleMod(ModManager.ModInfoData data, AssetBundle bundle) {
+        var node = data.assets;
+        if (node.HasKey("Scene")) {
+            bool checkFound = false;
+            foreach (var check in addedPlayableMaps) {
+                if (check.stub.GetRepresentedBy(data)) {
+                    checkFound = true;
+                    break;
+                }
+            }
+            if (checkFound) {
+                return;
+            }
+            PlayableMap playableMap = ScriptableObject.CreateInstance<PlayableMap>();
+            var request = bundle.LoadAssetAsync<Sprite>(node["SceneIcon"]);
+            var icon = await request.AsSingleAssetTask<Sprite>();
+            string sceneTitle = node.HasKey("SceneTitle") ? node["SceneTitle"] : "Unknown Map";
+            string sceneDescription = node.HasKey("SceneDescription") ? node["SceneDescription"] : "No description provided.";
+            playableMap.SetFromBundle(data.GetSceneBundleLocation(), node["Scene"], sceneTitle, icon, sceneDescription);
+            var copy = DeepCopyPlayableMap(playableMap);
+            copy.stub = new ModManager.ModStub(data);
+            PlayableMapDatabase.AddPlayableMap(copy);
+            addedPlayableMaps.Add(new ModStubPlayableMapPair() {
+                playableMap = copy,
+                stub = new ModManager.ModStub(data)
+            });
         }
     }
 }

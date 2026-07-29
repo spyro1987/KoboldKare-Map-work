@@ -225,7 +225,7 @@ namespace Photon.Pun
 
 
         // for asynchronous network synched loading.
-        private static AsyncOperationHandle<SceneInstance> _AsyncLevelLoadingOperation;
+        private static BoxedSceneLoad _AsyncLevelLoadingOperation;
 
         private static float _levelLoadingProgress = 0f;
 
@@ -240,17 +240,12 @@ namespace Photon.Pun
         /// <value>The level loading progress. Ranges from 0 to 1.</value>
         public static float LevelLoadingProgress
         {
-            get
-            {
-                if (_AsyncLevelLoadingOperation.IsValid())
-                {
-                    _levelLoadingProgress = _AsyncLevelLoadingOperation.PercentComplete;
-                }
-                else if (_levelLoadingProgress > 0f)
-                {
+            get {
+                if (_AsyncLevelLoadingOperation == null) {
                     _levelLoadingProgress = 1f;
+                    return _levelLoadingProgress;
                 }
-
+                _levelLoadingProgress = _AsyncLevelLoadingOperation.Progress;
                 return _levelLoadingProgress;
             }
         }
@@ -264,9 +259,7 @@ namespace Photon.Pun
         private static void LeftRoomCleanup()
         {
             // Clean up if we were loading asynchronously.
-            if (_AsyncLevelLoadingOperation.IsValid()) {
-                _AsyncLevelLoadingOperation = default;
-            }
+            _AsyncLevelLoadingOperation = new BoxedSceneLoad();
 
 
             bool wasInRoom = NetworkingClient.CurrentRoom != null;
@@ -1805,9 +1798,10 @@ namespace Photon.Pun
             //LogObjectArray(data);
 
             PhotonView view = GetPhotonView(viewID);
-            if (view == null)
+            var networkState = NetworkingClient.State;
+            if (view == null && networkState != ClientState.Leaving && networkState != ClientState.Joining)
             {
-                Debug.LogWarning("Received OnSerialization for view ID " + viewID + ". We have no such PhotonView! Ignore this if you're joining or leaving a room. State: " + NetworkingClient.State);
+                Debug.LogWarning("Received OnSerialization for view ID " + viewID + ". We have no such PhotonView!" );
                 return;
             }
 
@@ -2089,15 +2083,6 @@ namespace Photon.Pun
             return false;
         }
 
-
-        internal static bool AddressableResourceExists(object key, Type type) {
-            foreach (var l in Addressables.ResourceLocators) {
-                if (l.Locate(key, type, out IList<IResourceLocation> locs))
-                    return true;
-            }
-            return false;
-        }
-        
         /// <summary>Internally used to detect the current scene and load it if PhotonNetwork.AutomaticallySyncScene is enabled.</summary>
         internal static void LoadLevelIfSynced()
         {
@@ -2114,23 +2099,14 @@ namespace Photon.Pun
 
             // if loaded level is not the one defined by master in props, load that level
             object sceneId = PhotonNetwork.CurrentRoom.CustomProperties[CurrentSceneProperty];
-            if (sceneId is int)
-            {
+            if (sceneId is int) {
                 if (SceneManagerHelper.ActiveSceneBuildIndex != (int)sceneId)
                 {
                     PhotonNetwork.LoadLevel((int)sceneId);
                 }
-            }
-            else if (sceneId is string)
-            {
+            } else if (sceneId is string) {
                 if (SceneManagerHelper.ActiveSceneName != (string)sceneId) {
-                    if (AddressableResourceExists((string)sceneId, null)) {
-                        PhotonNetwork.LoadLevel((string)sceneId);
-                        Debug.Log($"Successfully found and loading... {(string)sceneId}."); 
-                    } else {
-                        Debug.LogError($"Failed to find scene with key {(string)sceneId}, loading blank scene."); 
-                        PhotonNetwork.LoadLevel("ErrorScene");
-                    }
+                    PhotonNetwork.LoadLevel((string)sceneId);
                 }
             }
         }
@@ -2181,15 +2157,12 @@ namespace Photon.Pun
 
 
             // if the new levelId does not match the current room-property, we can cancel existing loading (as we start a new one)
-            if (_AsyncLevelLoadingOperation.IsValid())
+            if (_AsyncLevelLoadingOperation is { IsDone: false })
             {
-                if (!_AsyncLevelLoadingOperation.IsDone)
-                {
-                    Debug.LogWarning("PUN cancels an ongoing async level load, as another scene should be loaded. Next scene to load: " + levelId);
-                }
-
-                _AsyncLevelLoadingOperation = default;
+                Debug.LogWarning("PUN cancels an ongoing async level load, as another scene should be loaded. Next scene to load: " + levelId);
             }
+
+            _AsyncLevelLoadingOperation = new BoxedSceneLoad();
 
 
             // current level is not yet in props, or different, so this client has to set it

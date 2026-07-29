@@ -5,8 +5,10 @@ using UnityEngine.UI;
 using TMPro;
 using Photon.Realtime;
 using Photon.Pun;
+using SimpleJSON;
 using UnityEngine.Localization;
 using UnityEngine.SceneManagement;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class CreateRoomOnPress : MonoBehaviour {
     public TMP_InputField roomNameField;
@@ -28,24 +30,51 @@ public class CreateRoomOnPress : MonoBehaviour {
         //saveDropdown.options.Add(new TMP_Dropdown.OptionData(savename, saveIcon));
         //}
     }
-    public IEnumerator CreateRoomRoutine() {
-        //if (saveDropdown.value == 0) {
-            yield return GameManager.instance.StartCoroutine(NetworkManager.instance.EnsureOnlineAndReadyToLoad());
-            PhotonNetwork.CreateRoom(roomNameField.text, new RoomOptions { MaxPlayers = (byte)maxPlayersField.value, IsVisible = !isPrivate.isOn, CleanupCacheOnLeave = false});
-        //} else {
-            //SaveManager.SaveList list = SaveManager.GetSaveList(false);
-            //SaveManager.Load(list.fileNames[saveDropdown.value - 1], true, (int)maxPlayersField.value, roomNameField.text, !isPrivate.isOn);
-        //}
+
+    private IEnumerator CreateRoomRoutine() {
+        MainMenu.ShowMenuStatic(MainMenu.MainMenuMode.Loading);
+        yield return GameManager.instance.StartCoroutine(NetworkManager.instance.EnsureOnlineAndReadyToLoad());
+        JSONArray modArray = new JSONArray();
+        foreach (var mod in ModManager.GetModsWithLoadedAssets()) {
+            JSONNode modNode = JSONNode.Parse("{}");
+            modNode["title"] = mod.title;
+            modNode["folderTitle"] = mod.folderTitle;
+            modNode["id"] = mod.id.ToString();
+            modArray.Add(modNode);
+        }
+
+        var modOptions = new Hashtable {
+            ["modList"] = modArray.ToString()
+        };
+        var boxedSceneLoad = MapLoadingInterop.RequestMapLoad(NetworkManager.instance.GetSelectedMap());
+        yield return new WaitUntil(() => boxedSceneLoad.IsDone);
+        var lobbyOptions = new string[1];
+        lobbyOptions[0] = "modList";
+        PhotonNetwork.CreateRoom(roomNameField.text,
+            new RoomOptions {
+                MaxPlayers = (byte)maxPlayersField.value, IsVisible = !isPrivate.isOn, CleanupCacheOnLeave = false,
+                CustomRoomProperties = modOptions, CustomRoomPropertiesForLobby = lobbyOptions
+            }
+        );
     }
+
     public void CreateRoom() {
         GameManager.instance.StartCoroutine(CreateRoomRoutine());
     }
-    public IEnumerator JoinRoomRoutine(string roomName) {
+    private IEnumerator JoinRoomRoutine(string roomName) {
+        if (string.IsNullOrEmpty(roomName)) {
+            PopupHandler.instance.SpawnPopup("Disconnect", true, default, "Please enter a room name.");
+            yield break;
+        }
+        MainMenu.ShowMenuStatic(MainMenu.MainMenuMode.Loading);
         Popup p = PopupHandler.instance.SpawnPopup("Connect");
-        yield return GameManager.instance.StartCoroutine(NetworkManager.instance.EnsureOnlineAndReadyToLoad());
-        PhotonNetwork.JoinRoom(roomName);
-        yield return new WaitUntil(() => PhotonNetwork.InRoom && SceneManager.GetActiveScene().name == "MainMap");
-        PopupHandler.instance.ClearPopup(p);
+        try {
+            yield return GameManager.instance.StartCoroutine(NetworkManager.instance.EnsureOnlineAndReadyToLoad());
+            PhotonNetwork.JoinRoom(roomName);
+            yield return new WaitUntil(() => PhotonNetwork.InRoom);
+        } finally {
+            PopupHandler.instance.ClearPopup(p);
+        }
     }
     public void JoinRoom() {
         GameManager.instance.StartCoroutine(JoinRoomRoutine(roomNameField.text));

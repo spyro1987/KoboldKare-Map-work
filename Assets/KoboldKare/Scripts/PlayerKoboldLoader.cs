@@ -7,7 +7,7 @@ using UnityEngine.Events;
 using UnityScriptableSettings;
 
 public class PlayerKoboldLoader : MonoBehaviour {
-    private static readonly string[] settingNames = {"Hue", "Brightness", "Saturation", "BoobSize", "KoboldSize", "DickSize", "DickThickness", "BallSize"};
+    private static readonly string[] settingNames = {"ClothingHue", "Hue", "Brightness", "Saturation", "BoobSize", "KoboldSize", "DickSize", "DickThickness", "BallSize"};
     private Kobold targetKobold;
     void OnEnable() {
         targetKobold = GetComponent<Kobold>();
@@ -48,9 +48,9 @@ public class PlayerKoboldLoader : MonoBehaviour {
                 var validInfos = database.GetValidPrefabReferenceInfos();
                 var info = database.GetInfoByName("HumanoidDick");
                 if (info == null) {
-                    genes.dickEquip = (setting.GetValue() == 0f) ? ushort.MinValue : (ushort)1;
+                    genes.dickEquip = (setting.GetValue() == 0f) ? CommandDick.unEquipID : (short)1;
                 } else {
-                    genes.dickEquip = (setting.GetValue() == 0f) ? ushort.MinValue : (ushort)(validInfos.IndexOf(info) + 1);
+                    genes.dickEquip = (setting.GetValue() == 0f) ? CommandDick.unEquipID : (short)(validInfos.IndexOf(info) + 1);
                 }
 
                 break;
@@ -60,6 +60,7 @@ public class PlayerKoboldLoader : MonoBehaviour {
     private static KoboldGenes ProcessOption(KoboldGenes genes, SettingFloat setting) {
         switch(setting.name) {
             case "Hue": genes.hue = (byte)Mathf.RoundToInt(setting.GetValue()*255f); break;
+            case "ClothingHue": genes.clothingHue = (byte)Mathf.RoundToInt(setting.GetValue()*255f); break;
             case "Brightness": genes.brightness = (byte)Mathf.RoundToInt(setting.GetValue()*255f); break;
             case "Saturation": genes.saturation = (byte)Mathf.RoundToInt(setting.GetValue()*255f); break;
             case "DickSize": genes.dickSize = Mathf.Lerp(0f, 10f, setting.GetValue()); break;

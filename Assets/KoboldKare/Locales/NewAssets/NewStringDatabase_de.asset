@@ -878,7 +878,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 211626638807977984
-    m_Localized: "\u0160pi\u010Dat\xFD penis"
+    m_Localized: Stacheliger Penis
     m_Metadata:
       m_Items: []
   - m_Id: 211626638837338112
@@ -1423,12 +1423,64 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 523772124214665216
-    m_Localized: Der von Ihnen eingegebene Name ist nicht angemessen. Bitte geben
-      Sie einen anderen Namen ein.
+    m_Localized: "Der von dir eingegebene Name ist unangemessen. Bitte w\xE4hle einen
+      anderen Namen."
     m_Metadata:
       m_Items: []
   - m_Id: 524703093826330624
     m_Localized: Heads-up-Display ausblenden
+    m_Metadata:
+      m_Items: []
+  - m_Id: 620055354093412352
+    m_Localized: Alle Mods aktivieren
+    m_Metadata:
+      m_Items: []
+  - m_Id: 620055354097606656
+    m_Localized: Alle Mods deaktivieren
+    m_Metadata:
+      m_Items: []
+  - m_Id: 621523673371713536
+    m_Localized: "Karte ausw\xE4hlen"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 623266765225402368
+    m_Localized: Kleidungsfarbe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 626166151202807808
+    m_Localized: "Bitte warten, Mods werden geladen \u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 626166151215390720
+    m_Localized: Mod-System wird initialisiert.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 626166151215390721
+    m_Localized: Warte auf Downloads ...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 626166151215390722
+    m_Localized: Suche nach neuen Mods
+    m_Metadata:
+      m_Items: []
+  - m_Id: 626166151215390723
+    m_Localized: "Mods aush\xE4ngen"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 626166151215390724
+    m_Localized: Montagemods
+    m_Metadata:
+      m_Items: []
+  - m_Id: 626166151215390725
+    m_Localized: Importieren von Assets aus Mods
+    m_Metadata:
+      m_Items: []
+  - m_Id: 626166151215390726
+    m_Localized: "Mods auf Fehler pr\xFCfen"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 626166151215390727
+    m_Localized: Bereit!
     m_Metadata:
       m_Items: []
   references:

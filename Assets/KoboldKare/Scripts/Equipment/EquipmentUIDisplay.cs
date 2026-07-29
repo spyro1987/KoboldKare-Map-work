@@ -9,6 +9,7 @@ using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine.Localization;
 using Photon.Pun;
+using UnityEngine.InputSystem;
 
 public class EquipmentUIDisplay : MonoBehaviour {
     [SerializeField] private Transform targetDisplay;
@@ -31,8 +32,6 @@ public class EquipmentUIDisplay : MonoBehaviour {
     }
     private List<GameObject> spawnedUI = new List<GameObject>();
     void Awake() {
-        inventory = GetComponentInParent<KoboldInventory>();
-        inventory.equipmentChanged += UpdateDisplay;
         foreach(var slot in slots) {
             EventTrigger et = slot.targetImage.gameObject.AddComponent<EventTrigger>();
             EventTrigger.Entry entry = new EventTrigger.Entry();
@@ -43,13 +42,45 @@ public class EquipmentUIDisplay : MonoBehaviour {
     }
 
     private void OnEnable() {
+        // Try really hard to find the player
+        if (PhotonNetwork.LocalPlayer.TagObject is not Kobold kobold) {
+            if (PlayerPossession.TryGetPlayerInstance(out var koboldPossession)) {
+                kobold = koboldPossession.kobold;
+            } else {
+                return;
+            }
+        }
+        StartCoroutine(WaitThenSubscribe());
+        inventory = kobold.GetComponent<KoboldInventory>();
+        inventory.equipmentChanged += UpdateDisplay;
         UpdateDisplay(inventory.GetAllEquipment());
     }
 
-    private void OnDestroy() {
+    private IEnumerator WaitThenSubscribe() {
+        yield return null;
+        var controls = GameManager.GetPlayerControls();
+        controls.UI.ViewStats.performed += OnCancel;
+        controls.UI.Cancel.performed += OnCancel;
+    }
+
+    private IEnumerator WaitThenDisable() {
+        yield return null;
+        if (MainMenu.GetCurrentMode() == MainMenu.MainMenuMode.Equipment) {
+            MainMenu.ShowMenuStatic(MainMenu.MainMenuMode.None);
+        }
+    }
+
+    private void OnCancel(InputAction.CallbackContext obj) {
+        GameManager.StartCoroutineStatic(WaitThenDisable());
+    }
+
+    private void OnDisable() {
         if (inventory != null) {
             inventory.equipmentChanged -= UpdateDisplay;
         }
+        var controls = GameManager.GetPlayerControls();
+        controls.UI.ViewStats.performed -= OnCancel;
+        controls.UI.Cancel.performed -= OnCancel;
     }
     public void DisplayDetail(Equipment e) {
         if (e == null) {
@@ -62,10 +93,11 @@ public class EquipmentUIDisplay : MonoBehaviour {
         detailDescription.StringReference = e.localizedDescription;
         detailTitle.StringReference = e.localizedName;
     }
-    public void UpdateDisplay(List<Equipment> equipment) {
+    private void UpdateDisplay(List<Equipment> equipment) {
         foreach(GameObject g in spawnedUI) {
             Destroy(g);
         }
+        spawnedUI.Clear();
         foreach (var slot in slots) {
             slot.containerImage.color = Color.white;
             slot.targetImage.sprite = slot.defaultSprite;
@@ -81,9 +113,7 @@ public class EquipmentUIDisplay : MonoBehaviour {
                     slot.targetImage.color = Color.white;
                 }
             }
-            GameObject ui = GameObject.Instantiate(inventoryUIPrefab, targetDisplay);
-
-
+            GameObject ui = Instantiate(inventoryUIPrefab, targetDisplay);
             ui.transform.Find("Label").GetComponent<LocalizeStringEvent>().StringReference = e.localizedName;
             var DropButton = ui.transform.Find("DropButton").GetComponent<Button>();
             DropButton.interactable = e.canManuallyUnequip;
