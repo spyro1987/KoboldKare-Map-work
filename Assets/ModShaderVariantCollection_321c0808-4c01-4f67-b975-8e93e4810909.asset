@@ -1,0 +1,295 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!200 &20000000
+ShaderVariantCollection:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ModShaderVariantCollection_321c0808-4c01-4f67-b975-8e93e4810909
+  m_Shaders:
+  - first: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+  - first: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: _ALPHATEST_ON
+        passType: 13
+      - keywords: _ALPHATEST_ON _EMISSION
+        passType: 13
+      - keywords: _ALPHATEST_ON _EMISSION _METALLICSPECGLOSSMAP _NORMALMAP
+        passType: 13
+      - keywords: _ALPHATEST_ON _METALLICSPECGLOSSMAP _NORMALMAP
+        passType: 13
+      - keywords: _ALPHATEST_ON _METALLICSPECGLOSSMAP _NORMALMAP _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: _ALPHATEST_ON _NORMALMAP
+        passType: 13
+      - keywords: _ALPHATEST_ON _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: _EMISSION
+        passType: 13
+      - keywords: _EMISSION _METALLICSPECGLOSSMAP _NORMALMAP
+        passType: 13
+      - keywords: _EMISSION _METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP _SPECULARHIGHLIGHTS_OFF
+        passType: 13
+      - keywords: _EMISSION _NORMALMAP
+        passType: 13
+      - keywords: _EMISSION _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: _METALLICSPECGLOSSMAP _NORMALMAP
+        passType: 13
+      - keywords: _METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP
+        passType: 13
+      - keywords: _METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP _PARALLAXMAP
+        passType: 13
+      - keywords: _METALLICSPECGLOSSMAP _NORMALMAP _OCCLUSIONMAP _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: _METALLICSPECGLOSSMAP _NORMALMAP _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: _NORMALMAP
+        passType: 13
+      - keywords: _NORMALMAP _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+        passType: 13
+      - keywords: _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+  - first: {fileID: 4800000, guid: 9360c483d0aebd74f89a07886916938c, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: bc0a95306787ee14c8cba6b6697de1e1, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: _PENETRATION_DEFORMATION_ON
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: _PENETRATION_DEFORMATION_DETAIL_ON _PENETRATION_DEFORMATION_ON
+        passType: 13
+      - keywords: _PENETRATION_DEFORMATION_ON
+        passType: 13
+  - first: {fileID: 4800000, guid: 42e0f16c77d25144ea2348ca1a254645, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: 92d824d5634a5ba4a85a4e5642ee1c99, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: b8a99704b1204314e816971e63a2a521, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: 5e20287be7b43564d985873f3e0d2e79, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: a9cde6543f2604b4cbd3023847cb9c0b, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 13
+  - first: {fileID: -6465566751694194690, guid: 4646cfe8b2b909e468b54c795b40f39c,
+      type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: a3a4b45780bd450459e93b3068a3fdf5, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: 0e39ae0a81c08934da4b55d075cf1c8f, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: 715d367803dced8428ed198a468e2daa, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: 26b46a3fa6c15d04c9ccdc878b96c6a5, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: 42fe206734e587c4e84e2abd6a933ae9, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 13
+  - first: {fileID: -6465566751694194690, guid: 6f2c6d829a5aa3a45919ae3bf92cf7bb,
+      type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: _RECEIVE_SHADOWS_OFF _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+  - first: {fileID: 4800000, guid: 650dd9526735d5b46b79224bc6e94025, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: 8d2bb70cbf9db8d4da26e15b26e74248, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: _EMISSION
+        passType: 13
+      - keywords: _EMISSION _RECEIVE_SHADOWS_OFF
+        passType: 13
+  - first: {fileID: 4800000, guid: dd89cf5b9246416f84610a006f916af7, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: b5df53a807ec78c44b18a18cd6a7b509, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: 5e1d12dd9f331b94da153b99f92b9e11, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: 08acf0bab1a569042874ac9a0feb5b44, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: ca0b6d34cba8a0941b62b865827f681e, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: f19a3760d65c20d43add25648189e9c3, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: 1e9413cde3392d64184886f4f8a221bc, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 81b73f95fcd66b94eb86cbacc96f2bb8, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: 9518223a6f4890b49bd34b6ba19ab433, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: 681f0afa76f7b9e4d93e6fd3c2ead6f8, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: 572304728e6728d4dbfd5cdec5f8e2f4, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: c74e1808ddaac6745ac169265a87048e, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+  - first: {fileID: -6465566751694194690, guid: 1123b3e26fe0f4e49be2689bef2030c2,
+      type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: BOOLEAN_DIRECTION_FROM_EULERANGLE_ON BOOLEAN_USE_WROLDSPACE_ON
+        passType: 13
+  - first: {fileID: 4800000, guid: 12b01ec06f90f98438c35c1028503f31, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: 10580ed660303c842a56c89c50da4782, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
