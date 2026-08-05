@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: custom stuff
+  m_Name: custom map
   m_EditorClassIdentifier: 
-  m_GroupName: custom stuff
+  m_GroupName: custom map
   m_Data:
     m_SerializedData: []
   m_GUID: 0c0736c94a322914b91afe1a859e9000
@@ -21,11 +21,6 @@ MonoBehaviour:
     m_Address: Main Map customized
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 39132bedb76f33b4e9e315a06b00828c
-    m_Address: bestboi2
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - PlayableCharacter
   - m_GUID: b968a9eef59eb3d45a07b0e2ea24ddd7
     m_Address: custom map playable
     m_ReadOnly: 0
@@ -35,64 +30,65 @@ MonoBehaviour:
     m_Address: New KoboldKare Modding Profile Scene
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 14a42bdb4ff2a48409ffb377d41c5641
-    m_Address: minecrat custom ambience prtootype warped forest audacity
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 140c3ad74b5313d49a9fad4aca665116
-    m_Address: your love is my drug 8 bit slowed (2023_12_21 18_40_56 UTC)
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: af7f9ac36c43bde49afcf367d498f0fe
-    m_Address: save us sara
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: ef7c14bd010a59f44a28aba06e59b94e
-    m_Address: "Juice WRLD  \uFF02My X Was Poison\uFF02  (Official Audio) [aeh4l8FUJlo]"
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 1d70bdb03156a7640af7e0dcaa158671
-    m_Address: Your Cum Wont Last
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: aceea7392b1267b46ac39f6b73cc8ac8
-    m_Address: lofi mincraft dungions
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 1ac779013af07a8439ac60cfdc43356a
-    m_Address: The Devil Music Co. - Chances
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 60f9e791c1ce95449ba40a9c1509ab13
-    m_Address: The_Strumbellas_Spirits_Lyrics_I_Got_Spirits_In_My_Head_And_They
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 3e378feae77011c44943c4d4498b6063
-    m_Address: my fave dusbstep song (2023_12_21 18_40_56 UTC)
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: adfceba0b1fae394abcb68303102845e
-    m_Address: Juice WRLD - Oxycodone (Official Audio) [JLlozA3YqGE]
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: cb4ab76fc0456d24fa5caf7d33f2dae0
-    m_Address: fun audio mix
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 11022f35eb2218647bb144b24f025fe5
-    m_Address: i really want to stay at your house (2023_12_21 18_40_56 UTC)
+  - m_GUID: e56c1076cbd54ec45a76b25e27d5b226
+    m_Address: Assets/(a) map folder/audio/The Bourgeois - Bootstraps.mp3
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 54a54a9f32d7a3249813fa8dc0d64cfe
-    m_Address: Juice Wrld - Lucid Dreams (Lyrics) (2023_12_21 18_40_56 UTC)
+    m_Address: Assets/(a) map folder/audio/Juice Wrld - Lucid Dreams.ogg
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: e56c1076cbd54ec45a76b25e27d5b226
-    m_Address: The Bourgeois - Bootstraps
+  - m_GUID: 11022f35eb2218647bb144b24f025fe5
+    m_Address: Assets/(a) map folder/audio/i really want to stay at your house.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: cb4ab76fc0456d24fa5caf7d33f2dae0
+    m_Address: Assets/(a) map folder/audio/fun audio mix.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: adfceba0b1fae394abcb68303102845e
+    m_Address: Assets/(a) map folder/audio/Juice WRLD - Oxycodone.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 3e378feae77011c44943c4d4498b6063
+    m_Address: Assets/(a) map folder/audio/my fave dusbstep song.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 60f9e791c1ce95449ba40a9c1509ab13
+    m_Address: Assets/(a) map folder/audio/The_Strumbellas_Spirits_Lyrics_I_Got_Spirits_In_My_Head_And_They.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1ac779013af07a8439ac60cfdc43356a
+    m_Address: Assets/(a) map folder/audio/The Devil Music Co. - Chances.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: aceea7392b1267b46ac39f6b73cc8ac8
+    m_Address: Assets/(a) map folder/audio/lofi mincraft dungions.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 1d70bdb03156a7640af7e0dcaa158671
+    m_Address: Assets/(a) map folder/audio/Your Cum Wont Last.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ef7c14bd010a59f44a28aba06e59b94e
+    m_Address: Assets/(a) map folder/audio/my x was poison.mp3
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: af7f9ac36c43bde49afcf367d498f0fe
+    m_Address: Assets/(a) map folder/audio/save us sara.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 140c3ad74b5313d49a9fad4aca665116
+    m_Address: Assets/(a) map folder/audio/your love is my drug 8 bit slowed.ogg
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 14a42bdb4ff2a48409ffb377d41c5641
+    m_Address: Assets/(a) map folder/audio/minecrat custom ambience prtootype warped
+      forest audacity.mp3
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: 9caecea04ff2c3b4ba00fd7116189a1c
-    m_Address: Jason Derulo - Trumpets (Lyrics) [SnZ-YUpEWOY]
+    m_Address: Assets/(a) map folder/videos for screens/Jason Derulo - Trumpets.mp4
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

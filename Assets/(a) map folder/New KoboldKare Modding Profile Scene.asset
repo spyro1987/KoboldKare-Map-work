@@ -24,8 +24,7 @@ MonoBehaviour:
     changeNotes: 1
     guid: 321c0808-4c01-4f67-b975-8e93e4810909
   modScene:
-    playableCharacters:
-    - {fileID: 600352702514391764, guid: 39132bedb76f33b4e9e315a06b00828c, type: 3}
+    playableCharacters: []
     cosmeticItems: []
     fruits: []
     equipmentStoreItems: []

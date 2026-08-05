@@ -10,16 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Monarchs best boy
+  m_Name: Localization-String-Tables-Bulgarian
   m_EditorClassIdentifier: 
-  m_GroupName: Monarchs best boy
+  m_GroupName: Localization-String-Tables-Bulgarian
   m_Data:
     m_SerializedData: []
-  m_GUID: 2382695035be6d440875e05ea360b14d
-  m_SerializeEntries: []
-  m_ReadOnly: 0
+  m_GUID: 946e53a496369e14088d407e6fda795d
+  m_SerializeEntries:
+  - m_GUID: 25c3167e40b773244a536cbd01e26684
+    m_Address: StringDatabase_bg
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-bg
+  m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: bae434cba05d81d4b9cb5c181a2fbf2c, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: b800dab0fc67304449566a50bced177d, type: 2}
-    - {fileID: 11400000, guid: d9e1c36244727dc44bf0c5883409ba2b, type: 2}
+    - {fileID: 11400000, guid: 14cd88e8cf474f74092af9baf2f030d8, type: 2}
+    - {fileID: 11400000, guid: 9bea36ace16e57c4c9ef1e047fcad8cc, type: 2}
