@@ -80,7 +80,7 @@ ShaderVariantCollection:
         passType: 8
       - keywords: 
         passType: 13
-      - keywords: _PENETRATION_DEFORMATION_DETAIL_ON
+      - keywords: _PENETRATION_DEFORMATION_DETAIL_ON _PENETRATION_DEFORMATION_ON
         passType: 13
       - keywords: _PENETRATION_DEFORMATION_ON
         passType: 13

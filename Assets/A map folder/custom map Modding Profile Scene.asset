@@ -13,15 +13,26 @@ MonoBehaviour:
   m_Name: custom map Modding Profile Scene
   m_EditorClassIdentifier: 
   workshopItem:
-    publishedFileId: 0
+    publishedFileId: 3080900662
     visibility: 2
     tags: 2
     loadPriority: 0
     previewSprite: {fileID: 21300000, guid: 70ef937e8f9d1be46a0b9d83dea27e28, type: 3}
     language: 0
-    title: 122
-    description: 1
-    changeNotes: 1
+    title: Monarchs custom default map v1
+    description: 'my custom version of the default Map i am using to learn how all
+      the game functions work
+
+      
+
+      the cave objectives are moved to the
+      tent above ground just walk over to it to trigger the splunking mission to
+      continue
+
+      
+
+      fixed save bug again 11/22/2023'
+    changeNotes: fixed a script being changed
     guid: 321c0808-4c01-4f67-b975-8e93e4810909
   modScene:
     playableCharacters: []
@@ -39,4 +50,4 @@ MonoBehaviour:
     scene: {fileID: 102900000, guid: 708c60ef18c02ca4fabb5de5ebdd5937, type: 3}
     sceneIcon: {fileID: 21300000, guid: 70ef937e8f9d1be46a0b9d83dea27e28, type: 3}
     sceneTitle: main map customised
-    sceneDescription: a
+    sceneDescription: Monarchs scuffed custom version of the defuilt map
